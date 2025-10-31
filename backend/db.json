@@ -5,109 +5,110 @@
   },
   "animals": [
     {
-      "id": 1, 
-      "name": "Henry",
+      "id": 1,
+      "name": "Meow",
       "type": "Cat",
-      "icon": "🐱"
+      "icon": "🐱",
+      "time": "31-10-2025, 14:38:02"
     },
     {
-      "id": 2, 
+      "id": 2,
       "name": "Frederic",
       "type": "Cat",
       "icon": "🐱"
     },
     {
-      "id": 3, 
+      "id": 3,
       "name": "Boris",
-      "type": "Spider",
+      "type": "spider",
       "icon": "🕷"
     },
     {
-      "id": 4, 
+      "id": 4,
       "name": "Henry",
       "type": "Cat",
       "icon": "🐱"
     },
     {
-      "id": 5, 
+      "id": 5,
       "name": "Burt",
       "type": "Dog",
       "icon": "🐶"
     },
     {
-      "id": 6, 
+      "id": 6,
       "name": "Freddy",
       "type": "Cat",
       "icon": "🐱"
     },
     {
-      "id": 7, 
+      "id": 7,
       "name": "Whoopsie",
       "type": "Mouse",
       "icon": "🐭"
     },
     {
-      "id": 8, 
+      "id": 8,
       "name": "Drunkie",
       "type": "Cat",
       "icon": "🐱"
     },
     {
-      "id": 9, 
+      "id": 9,
       "name": "Heehee",
       "type": "Pig",
       "icon": "🐷"
     },
     {
-      "id": 10, 
+      "id": 10,
       "name": "David",
       "type": "Pig",
       "icon": "🐷"
     },
     {
-      "id": 11, 
+      "id": 11,
       "name": "Dennis",
       "type": "Dog",
       "icon": "🐶"
     },
     {
-      "id": 12, 
+      "id": 12,
       "name": "Boris",
       "type": "Cow",
       "icon": "🐮"
     },
     {
-      "id": 13, 
+      "id": 13,
       "name": "Ace",
       "type": "Cat",
       "icon": "🐱"
     },
     {
-      "id": 14, 
+      "id": 14,
       "name": "Frits",
       "type": "Cat",
       "icon": "🐱"
     },
     {
-      "id": 15, 
+      "id": 15,
       "name": "Freye",
       "type": "Dog",
       "icon": "🐶"
     },
     {
-      "id": 16, 
+      "id": 16,
       "name": "Grease",
       "type": "Mouse",
       "icon": "🐭"
     },
     {
-      "id": 17, 
+      "id": 17,
       "name": "Darling",
       "type": "Spider",
       "icon": "🕷"
     },
     {
-      "id": 18, 
+      "id": 18,
       "name": "Ferry",
       "type": "Spider",
       "icon": "🕷"
