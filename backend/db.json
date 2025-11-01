@@ -5,13 +5,6 @@
   },
   "animals": [
     {
-      "id": 1,
-      "name": "Meow",
-      "type": "Cat",
-      "icon": "🐱",
-      "time": "31-10-2025, 14:38:02"
-    },
-    {
       "id": 2,
       "name": "Frederic",
       "type": "Cat",

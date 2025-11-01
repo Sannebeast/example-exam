@@ -1,85 +1,140 @@
 import { JSONFilePreset } from "lowdb/node";
 
 // Read or create db.json
-const defaultData = { meta: {"tile": "List of animals","date": "September 2024"}, animals : [] }
-const db = await JSONFilePreset('db.json', defaultData)
-const animals = db.data.animals
+const defaultData = { 
+  meta: { "title": "List of animals", "date": "September 2024" }, 
+  animals: [] 
+};
+const db = await JSONFilePreset('db.json', defaultData);
 
+// returns all pets
 export async function getAllPets(req, res) {
-  const animalUrls = animals.map(animal => `/pets/${animal.id}`);
-  res.status(200).send(animalUrls);
+  await db.read();
+  const pets = db.data.animals;
+
+  res.status(200).json({
+    meta: {
+      success: true,
+      count: pets.length,
+      timestamp: new Date().toISOString()
+    },
+    data: pets
+  });
 }
 
-export async function updatePet(req, res) {
-  let id = Number(req.query.id);
-  let name = req.query.name;
-  let type = req.query.type;
+// returns single pet
+export async function getPet(req, res) {
+  await db.read();
+  const id = Number(req.params.id);
+  const animal = db.data.animals.find(a => a.id === id);
 
-  if (!id || !name) {
-    return res.status(400).send({ error: "Missing required fields: id or name." });
+  if (!animal) {
+    return res.status(404).json({
+      meta: { success: false, action: 'get' },
+      error: `No animal found with id ${id}.`
+    });
   }
 
-  // Check if id exists
-  const existingAnimal = animals.find(animal => animal.id === id);
-  if (!existingAnimal) {
-    return res.status(404).send({ error: `No animal found with id ${id}.` });
-  }
-
-  // Update only provided fields
-  if (name) existingAnimal.name = name;
-  if (type) existingAnimal.type = type;
-  existingAnimal.time = new Date().toLocaleString();
-
-  await db.write();
-  res.status(200).send({ message: "Pet updated successfully", pet: existingAnimal });
+  res.status(200).json({
+    meta: { success: true, action: 'get', timestamp: new Date().toISOString() },
+    data: animal
+  });
 }
 
-// Find all spiders and return IDs
+// returns all spiders
 export async function getAllSpiders(req, res) {
   await db.read();
-  const animals = db.data.animals;
-  const spiders = animals.filter(a => a.type && a.type.toLowerCase() === "spider");
-  const ids = spiders.map(s => s.id);
+  const spiders = db.data.animals.filter(
+    a => a.type && a.type.toLowerCase() === "spider"
+  );
 
-  if (ids.length === 0) {
-    return res.status(404).send({ error: "No spiders found." });
+  if (spiders.length === 0) {
+    return res.status(404).json({
+      meta: { success: false, action: 'get' },
+      error: "No spiders found."
+    });
   }
 
-  res.status(200).send({ spiderIds: ids });
+  res.status(200).json({
+    meta: { 
+      success: true, 
+      count: spiders.length, 
+      type: "spider",
+      timestamp: new Date().toISOString() 
+    },
+    data: spiders
+  });
 }
 
-// Delete multiple pets
-export async function deleteMultiplePets(req, res) {
-  const { ids } = req.body;
+// updates single pet
+export async function updatePet(req, res) {
+  const id = Number(req.params.id);
+  const { name, type } = req.body;
 
-  if (!Array.isArray(ids) || ids.length === 0) {
-    return res.status(400).send({ error: "Please provide a list of ids to delete." });
+  if (!name) {
+    return res.status(400).json({
+      meta: { success: false, action: 'update' },
+      error: "Missing required field: 'name'."
+    });
   }
 
-  let deleted = 0;
-  ids.forEach(id => {
-    const index = animals.findIndex(a => a.id === id);
-    if (index !== -1) {
-      animals.splice(index, 1);
-      deleted++;
-    }
-  });
+  await db.read();
+  const animal = db.data.animals.find(a => a.id === id);
+
+  if (!animal) {
+    return res.status(404).json({
+      meta: { success: false, action: 'update' },
+      error: `No animal found with id ${id}.`
+    });
+  }
+
+  animal.name = name;
+  if (type) animal.type = type;
+  animal.time = new Date().toLocaleString();
 
   await db.write();
 
-  if (deleted === 0) {
-    return res.status(404).send({ error: "No matching pets found to delete." });
-  }
-
-  res.status(200).send({ message: `${deleted} pet(s) deleted.` });
+  res.status(200).json({
+    meta: { success: true, action: 'update', timestamp: new Date().toISOString() },
+    data: animal
+  });
 }
 
-export async function getPet(req, res) {
-  let id = Number(req.params.id);
-  let animal = animals.find(animal => animal.id === id);
-  if (animal) {
-    res.status(200).send(animal);
-  } else {
-    res.status(404).send('Animal not found');
+// deletes multiple pets
+export async function deleteMultiplePets(req, res) {
+  const idsParam = req.query.ids;
+
+  if (!idsParam) {
+    return res.status(400).json({
+      meta: { success: false, action: 'delete' },
+      error: "Please provide ids query parameter, e.g. ?ids=1,2,3"
+    });
   }
+
+  const ids = idsParam.split(',').map(Number);
+
+  await db.read();
+  const beforeCount = db.data.animals.length;
+  db.data.animals = db.data.animals.filter(a => !ids.includes(a.id));
+  const afterCount = db.data.animals.length;
+
+  const deletedCount = beforeCount - afterCount;
+  await db.write();
+
+  if (deletedCount === 0) {
+    return res.status(404).json({
+      meta: { success: false, action: 'delete' },
+      error: "No matching pets found to delete."
+    });
+  }
+
+  res.status(200).json({
+    meta: { 
+      success: true, 
+      action: 'delete', 
+      deletedCount, 
+      timestamp: new Date().toISOString() 
+    },
+    data: db.data.animals
+  });
 }
