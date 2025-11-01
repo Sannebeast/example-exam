@@ -1,21 +1,29 @@
 <script>
-	import { onMount, setContext } from 'svelte';
-	import Pets from '$lib/components/Pets.svelte';
-	import { allPets, selectedType, filteredPets } from '$lib/stores/petsStore.js';
+  import { setContext } from 'svelte';
+  import { writable, derived } from 'svelte/store';
+  import Pets from '$lib/components/Pets.svelte';
 
-	onMount(async () => {
-		const res = await fetch('http://localhost:3010/pets');
-		const urls = await res.json();
-		
-		// Fetch full pet details for each
-		const petData = await Promise.all(urls.map(u => fetch(`http://localhost:3010${u}`).then(r => r.json())));
-		allPets.set(petData);
-	});
+  export let data;
 
-	// Provide context
-	setContext('pets', { allPets, selectedType, filteredPets });
+  // Create stores
+  const allPets = writable(data.pets || []);
+  const selectedType = writable(null);
+
+  // Derived store: filters pets based on selected type
+  const filteredPets = derived(
+    [allPets, selectedType],
+    ([$allPets, $selectedType]) => {
+      if (!$selectedType) return $allPets;
+      return $allPets.filter(p => p.type === $selectedType);
+    }
+  );
+
+  // Provide context for children components
+  setContext('pets', { allPets, selectedType, filteredPets });
 </script>
 
-<main class="p-4">
-	<Pets />
-</main>
+{#if data.error}
+  <p class="text-center text-red-600">{data.error}</p>
+{:else}
+  <Pets />
+{/if}
