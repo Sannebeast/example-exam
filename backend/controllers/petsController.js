@@ -138,3 +138,47 @@ export async function deleteMultiplePets(req, res) {
     data: db.data.animals
   });
 }
+
+// creates a new pet
+export async function createPet(req, res) {
+  const { id, name, type, icon } = req.body;
+
+  // Validate required fields
+  if (!id || !name || !type) {
+    return res.status(400).json({
+      meta: { success: false, action: 'create' },
+      error: "Missing required fields: 'id', 'name', or 'type'."
+    });
+  }
+
+  await db.read();
+
+  // Check if ID already exists
+  const existingAnimal = db.data.animals.find(a => a.id === id);
+  if (existingAnimal) {
+    return res.status(400).json({
+      meta: { success: false, action: 'create' },
+      error: `Pet with id ${id} already exists.`
+    });
+  }
+
+  // Create new animal object
+  const newAnimal = {
+    id,
+    name,
+    type,
+    icon: icon || "🐾",
+    time: new Date().toLocaleString()
+  };
+
+  // Save to DB
+  db.data.animals.push(newAnimal);
+  await db.write();
+
+  // Respond success
+  res.status(201).json({
+    meta: { success: true, action: 'create', timestamp: new Date().toISOString() },
+    data: newAnimal
+  });
+}
+

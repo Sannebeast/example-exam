@@ -5,12 +5,6 @@
   },
   "animals": [
     {
-      "id": 2,
-      "name": "Frederic",
-      "type": "Cat",
-      "icon": "🐱"
-    },
-    {
       "id": 3,
       "name": "Boris",
       "type": "spider",
@@ -105,6 +99,13 @@
       "name": "Ferry",
       "type": "Spider",
       "icon": "🕷"
+    },
+    {
+      "id": "1",
+      "name": "Pookie",
+      "type": "Cat",
+      "icon": "🐕",
+      "time": "3-11-2025, 21:42:12"
     }
   ]
 }
